@@ -118,16 +118,9 @@ source "qemu" "qemu" {
   accelerator = var.accelerator
   qemu_binary = "qemu-system-${var.architecture.qemu}"
   cpu_model = var.cpu_type
-  efi_firmware_code = "/opt/homebrew/share/qemu/edk2-x86_64-code.fd"
-  efi_firmware_vars = "/opt/homebrew/share/qemu/edk2-i386-vars.fd"
+  firmware = "resources/uefi.fd"
 
-  boot_wait = "1m"
-
-  boot_steps = [
-    ["a<enter><wait5>", "Installation messages in English"]
-  ]
-
-  ssh_username = "root"
+  ssh_username = "user"
   ssh_password = var.root_password
   ssh_timeout = "10000s"
 
@@ -145,17 +138,88 @@ source "qemu" "qemu" {
 
   iso_checksum = var.checksum
   iso_urls = [
-    "http://mirror.rit.edu/haiku/r1beta4/haiku-r1beta4-x86_64-anyboot.iso",
-    "https://ftp.osuosl.org/pub/haiku/r1beta4/haiku-r1beta4-x86_64-anyboot.iso",
-    "https://s3.us-east-1.wasabisys.com/haiku-release/r1beta4/haiku-r1beta4-x86_64-anyboot.iso",
-    "https://cloudflare-ipfs.com/ipns/hpkg.haiku-os.org/release/r1beta4/haiku-r1beta4-x86_64-anyboot.iso",
-    "https://mirror.aarnet.edu.au/pub/haiku/r1beta4/haiku-r1beta4-x86_64-anyboot.iso",
+    "http://mirror.rit.edu/haiku/r1beta4/haiku-r1beta4-${var.architecture.image}-anyboot.iso",
+    "https://ftp.osuosl.org/pub/haiku/r1beta4/haiku-r1beta4-${var.architecture.image}-anyboot.iso",
+    "https://s3.us-east-1.wasabisys.com/haiku-release/r1beta4/haiku-r1beta4-${var.architecture.image}-anyboot.iso",
+    "https://cloudflare-ipfs.com/ipns/hpkg.haiku-os.org/release/r1beta4/haiku-r1beta4-${var.architecture.image}-anyboot.iso",
+    "https://mirror.aarnet.edu.au/pub/haiku/r1beta4/haiku-r1beta4-${var.architecture.image}-anyboot.iso",
   ]
 
   http_directory = "."
   output_directory = "output"
-  shutdown_command = "/sbin/poweroff"
+  shutdown_command = "shutdown -q"
   vm_name = local.vm_name
+
+  boot_wait = "40s"
+
+  boot_steps = [
+    // Installer
+    ["<tab><wait>", "Keymap"],
+    ["<tab><wait>", "Select 'Install Haiku'"],
+    ["<spacebar><wait>", "Press 'Install Haiku'"],
+
+    ["<enter><wait>", "Continue"],
+
+    ["<enter><wait>", "No parations have been found ..."],
+
+    ["<tab><wait>", "Install from"],
+    ["<tab><wait>", "Onto"],
+    ["<tab><wait>", "Show optional packages"],
+    ["<tab><wait>", "Select 'Set up partions'"],
+    ["<spacebar><wait>", "Press 'Set up partions'"],
+
+    // DriveSetup
+    ["<down><wait>", "DVD 1 - Haiku"],
+    ["<down><wait>", "DVD 1 - haiku eps"],
+    ["<down><wait>", "DVD 2"],
+    ["<down><wait>", "/dev/disk/virtual/virtio_block/0/raw"],
+    ["<leftAltOn><esc><leftAltOff><wait>", "open main menu"],
+    ["<right><wait>", "Partition"],
+    ["<down><wait>", "Select 'Format'"],
+    ["<right><wait>", "Open 'Format'"],
+    ["<down><wait>", "NT File System"],
+    ["<down><wait>", "Select 'Be File System'"],
+    ["<spacebar><wait>", "Press 'Be File System'"],
+
+    ["<tab><wait>", "Select Continue"],
+    ["<spacebar><wait>", "Press Continue"],
+
+    ["<enter><wait>", "Format"],
+
+    // Are you sure you want to write the changes back to disk now?
+    ["<tab><wait>", "Select Write changes"],
+    ["<spacebar><wait>", "Press Write changes"],
+
+    // The partion "Haiku" has been successfully formatted.
+    ["<enter><wait>", "OK"],
+
+    // DriveSetup
+    ["<leftAltOn>w<leftAltOff><wait>", "Close"],
+
+    // Installer
+    ["<leftShiftOn><tab><leftShiftOff><wait>", "Show optional packages"],
+    ["<leftShiftOn><tab><leftShiftOff><wait>", "Select 'Onto'"],
+    ["<down><wait>", "Open 'Onto'"],
+    ["<up><down><wait>", "Select '/dev/disk/virtual/virtio_block/0/raw'"],
+    ["<enter><wait>", "Press '/dev/disk/virtual/virtio_block/0/raw'"],
+    ["<enter><wait1m>", "Begin"],
+    ["<enter>", "Restart"],
+    ["<wait1m>", "Wait for restart"],
+
+    // Haiku. System is now installed and has rebooted. Need to set password.
+    ["haiku<enter>", "Haiku"],
+    ["system<enter><wait5s>", "Change to 'system' directory"],
+    ["apps<enter><wait5s>", "Change to 'apps' directory"],
+    ["Terminal<enter><wait5s>", "Start 'Terminal', application"],
+    ["passwd<enter><wait>", "Execute 'passwd' command"],
+    ["${var.root_password}<enter><wait>", "Set password"],
+    ["${var.root_password}<enter><wait>", "Confirm set password"],
+    [
+      "echo 'PermitRootLogin yes' >> /system/settings/ssh/sshd_config<enter><wait>",
+      "Enable SSH login for root user"
+    ],
+    ["shutdown -q -r<enter>"]
+  ]
 }
 
 packer {
