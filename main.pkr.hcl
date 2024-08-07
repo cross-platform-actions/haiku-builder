@@ -81,12 +81,6 @@ variable "display" {
   description = "What QEMU -display option to use"
 }
 
-variable "accelerator" {
-  default = "tcg"
-  type = string
-  description = "The accelerator type to use when running the VM"
-}
-
 variable "firmware" {
   type = string
   description = "The firmware file to be used by QEMU"
@@ -115,7 +109,7 @@ source "qemu" "qemu" {
   headless = var.headless
   use_default_display = var.use_default_display
   display = var.display
-  accelerator = var.accelerator
+  accelerator = "none"
   qemu_binary = "qemu-system-${var.architecture.qemu}"
   cpu_model = var.cpu_type
   firmware = "resources/uefi.fd"
@@ -128,15 +122,26 @@ source "qemu" "qemu" {
     ["-boot", "strict=off"],
     ["-monitor", "none"],
 
+    ["-accel", "kvm"],
+    ["-accel", "hvf"],
+    ["-accel", "tcg"],
+
     ["-device", "virtio-vga"],
     ["-usb"],
     ["-device", "usb-tablet,bus=usb-bus.0"],
     ["-device", "usb-mouse,bus=usb-bus.0"],
     ["-device", "usb-kbd,bus=usb-bus.0"],
-    ["-device", "nec-usb-xhci,id=usb-controller-0"]
+    ["-device", "nec-usb-xhci,id=usb-controller-0"],
+
+    ["-device", "virtio-blk,drive=drive0,bootindex=0"],
+    ["-device", "ide-cd,drive=drive1,bootindex=1"],
+    ["-drive", "if=none,file={{ .OutputDir }}/{{ .Name }},id=drive0,cache=writeback,discard=ignore,format=qcow2"],
+    ["-drive", "if=none,file=${local.iso_full_target_path},id=drive1,media=disk,format=raw,readonly=on"]
   ]
 
   iso_checksum = var.checksum
+  iso_target_extension = local.iso_target_extension
+  iso_target_path = local.iso_target_path
   iso_urls = [
     "http://mirror.rit.edu/haiku/r1beta4/haiku-r1beta4-${var.architecture.image}-anyboot.iso",
     "https://ftp.osuosl.org/pub/haiku/r1beta4/haiku-r1beta4-${var.architecture.image}-anyboot.iso",
@@ -218,7 +223,23 @@ source "qemu" "qemu" {
       "echo 'PermitRootLogin yes' >> /system/settings/ssh/sshd_config<enter><wait>",
       "Enable SSH login for root user"
     ],
-    ["shutdown -q -r<enter>"]
+    ["exit<enter><wait>", "Exit Terminal"],
+
+    // Restart SSH daemon
+    ["<leftAltOn>w<leftAltOff><wait>", "Close 'apps' window"],
+    ["preferences<enter><wait5s>", "Change to 'preferences' directory"],
+    ["network<enter><wait5s>", "Open Network preferences"],
+    ["<tab><wait>", "Select left side list"],
+    ["<down>", "IPv4"],
+    ["<down>", "IPv6"],
+    ["<down>", "Services"],
+    ["<down>", "DNS Settings"],
+    ["<down>", "FTP server"],
+    ["<down>", "Hostname settings"],
+    ["<down><wait>", "SSH server"],
+    ["<tab><wait>", "Move focus to 'Disable' button"],
+    ["<spacebar><wait5s>", "Click Disable"],
+    ["<spacebar>", "Click Enable"]
   ]
 }
 
