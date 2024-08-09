@@ -257,8 +257,13 @@ build {
 
   provisioner "shell" {
     script = "resources/provision.sh"
-    environment_vars = [
-      "SECONDARY_USER=${var.secondary_user_username}"
-    ]
+  }
+
+  provisioner "shell" {
+    script = "resources/custom.sh"
+  }
+
+  provisioner "shell" {
+    script = "resources/cleanup.sh"
   }
 }
