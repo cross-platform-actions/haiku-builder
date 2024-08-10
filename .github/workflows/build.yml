@@ -23,7 +23,7 @@ jobs:
 
           architecture:
             - name: x86-64
-              qemu: x86
+              qemu: x86_64
 
     steps:
       - name: Clone Repository
