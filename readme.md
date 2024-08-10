@@ -1,32 +1,16 @@
-# NetBSD Builder
+# Haiku Builder
 
-This project builds the NetBSD VM image for the
+This project builds the Haiku VM image for the
 [cross-platform-actions/action](https://github.com/cross-platform-actions/action)
-GitHub action. The image contains a standard NetBSD installation without any
-X components. It will install the following distribution sets:
+GitHub action. The image contains a standard Haiku installation.
 
-* Kernel (GENERIC)
-* Kernel modules
-* Base
-* Configuration files
-* Compiler tools
-* X11 base and clients
-* X11 programming
-* X11 configuration
-* X11 fonts
-* X11 servers
-
-In addition to the above file sets, the following packages are installed as well:
+The following packages are installed as well:
 
 * bash
 * curl
-* pkgin
 * rsync
-* sudo
 
-Except for the root user, there's one additional user, `runner`, which is the
-user that will be running the commands in the GitHub action. This user is
-allowed use `sudo` without a password.
+Since Haiku is not a multiuser system, there's only one user named `user`.
 
 ## Architectures and Versions
 
@@ -34,7 +18,7 @@ The following architectures and versions are supported:
 
 | Version | x86-64 |
 |---------|--------|
-| 9.2     | ✓      |
+| r1beta4 | ✓      |
 
 ## Building Locally
 
@@ -47,8 +31,8 @@ The following architectures and versions are supported:
 
 1. Clone the repository:
     ```
-    git clone https://github.com/cross-platform-actions/netbsd-builder
-    cd netbsd-builder
+    git clone https://github.com/cross-platform-actions/haiku-builder
+    cd haiku-builder
     ```
 
 2. Run `build.sh` to build the image:
@@ -59,7 +43,7 @@ The following architectures and versions are supported:
     architectures available in the above table.
 
 The above command will build the VM image and the resulting disk image will be
-at the path: `output/netbsd-9.2-x86-64.qcow2`.
+at the path: `output/haiku-r1beta4-x86-64.qcow2`.
 
 ## Additional Information
 
