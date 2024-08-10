@@ -118,7 +118,7 @@ source "qemu" "qemu" {
     ["-device", "ide-cd,drive=drive1,bootindex=1"],
     ["-drive", "if=none,file={{ .OutputDir }}/{{ .Name }},id=drive0,cache=writeback,discard=ignore,format=qcow2"],
     ["-drive", "if=none,file=${local.iso_full_target_path},id=drive1,media=disk,format=raw,readonly=on"],
-    var.headless ? [] : ["-device", "virtio-vga"]
+    var.headless ? [""] : ["-device", "virtio-vga"]
   )
 
   iso_checksum = var.checksum
