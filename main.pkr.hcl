@@ -53,18 +53,6 @@ variable "root_password" {
   description = "The password for the root user"
 }
 
-variable "secondary_user_password" {
-  default = "vagrant"
-  type = string
-  description = "The password for the `secondary_user_username` user"
-}
-
-variable "secondary_user_username" {
-  default = "vagrant"
-  type = string
-  description = "The name for the secondary user"
-}
-
 variable "headless" {
   default = false
   description = "When this value is set to `true`, the machine will start without a console"
@@ -79,11 +67,6 @@ variable "use_default_display" {
 variable "display" {
   default = "cocoa"
   description = "What QEMU -display option to use"
-}
-
-variable "firmware" {
-  type = string
-  description = "The firmware file to be used by QEMU"
 }
 
 locals {
