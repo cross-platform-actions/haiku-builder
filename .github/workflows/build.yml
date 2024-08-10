@@ -1,7 +1,7 @@
 name: Build VM Disk Image
 
 env:
-  PACKER_VERSION: '1.8.4'
+  PACKER_VERSION: '1.11.2'
 
 on:
   push:
@@ -13,13 +13,13 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: ${{ matrix.version }}, ${{ matrix.architecture.name }}
     runs-on: ubuntu-latest
+    container: alpine:edge
     strategy:
         matrix:
           version:
-            - 9.2
-            - 9.3
+            - r1beta4
 
           architecture:
             - name: x86-64
@@ -27,20 +27,16 @@ jobs:
 
     steps:
       - name: Clone Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
 
       - name: Install Dependencies
-        run: sudo apt update && sudo apt install curl unzip "qemu-system-${{ matrix.architecture.name }}" -y
+        run: apk add --no-cache qemu-img "qemu-system-${{ matrix.architecture.qemu }}"
 
       - uses: hashicorp/setup-packer@main
         with:
           version: ${{ env.PACKER_VERSION }}
-
-      - name: Download QEMU UEFI
-        if: matrix.architecture.name == 'arm64'
-        run: curl -o resources/qemu_efi.fd -L https://releases.linaro.org/components/kernel/uefi-linaro/latest/release/qemu64/QEMU_EFI.fd
 
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
