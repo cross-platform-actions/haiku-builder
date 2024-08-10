@@ -25,13 +25,13 @@ variable "cpu_type" {
 }
 
 variable "memory" {
-  default = 4096
+  default = 8192
   type = number
   description = "The amount of memory to use when building the VM in megabytes"
 }
 
 variable "cpus" {
-  default = 2
+  default = 4
   type = number
   description = "The number of cpus to use when building the VM"
 }
