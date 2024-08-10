@@ -117,8 +117,9 @@ source "qemu" "qemu" {
     ["-device", "virtio-blk,drive=drive0,bootindex=0"],
     ["-device", "ide-cd,drive=drive1,bootindex=1"],
     ["-drive", "if=none,file={{ .OutputDir }}/{{ .Name }},id=drive0,cache=writeback,discard=ignore,format=qcow2"],
-    ["-drive", "if=none,file=${local.iso_full_target_path},id=drive1,media=disk,format=raw,readonly=on"]
-  ], var.headless ? [] : ["-device", "virtio-vga"])
+    ["-drive", "if=none,file=${local.iso_full_target_path},id=drive1,media=disk,format=raw,readonly=on"],
+    var.headless ? [] : ["-device", "virtio-vga"]
+  )
 
   iso_checksum = var.checksum
   iso_target_extension = local.iso_target_extension
