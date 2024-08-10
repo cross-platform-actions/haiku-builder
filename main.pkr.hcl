@@ -112,7 +112,6 @@ source "qemu" "qemu" {
   accelerator = "none"
   qemu_binary = "qemu-system-${var.architecture.qemu}"
   cpu_model = var.cpu_type
-  firmware = "resources/uefi.fd"
 
   ssh_username = "user"
   ssh_password = var.root_password
@@ -182,8 +181,6 @@ source "qemu" "qemu" {
     ["<right><wait>", "Partition"],
     ["<down><wait>", "Select 'Format'"],
     ["<right><wait>", "Open 'Format'"],
-    ["<down><wait>", "NT File System"],
-    ["<down><wait>", "Select 'Be File System'"],
     ["<spacebar><wait>", "Press 'Be File System'"],
 
     ["<tab><wait>", "Select Continue"],
