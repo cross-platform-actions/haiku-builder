@@ -100,7 +100,7 @@ source "qemu" "qemu" {
   ssh_password = var.root_password
   ssh_timeout = "10000s"
 
-  qemuargs = [
+  qemuargs = concat(
     ["-boot", "strict=off"],
     ["-monitor", "none"],
 
@@ -108,7 +108,6 @@ source "qemu" "qemu" {
     ["-accel", "hvf"],*/
     ["-accel", "tcg"],
 
-    ["-device", "virtio-vga"],
     ["-usb"],
     ["-device", "usb-tablet,bus=usb-bus.0"],
     ["-device", "usb-mouse,bus=usb-bus.0"],
@@ -119,7 +118,7 @@ source "qemu" "qemu" {
     ["-device", "ide-cd,drive=drive1,bootindex=1"],
     ["-drive", "if=none,file={{ .OutputDir }}/{{ .Name }},id=drive0,cache=writeback,discard=ignore,format=qcow2"],
     ["-drive", "if=none,file=${local.iso_full_target_path},id=drive1,media=disk,format=raw,readonly=on"]
-  ]
+  ], var.headless ? [] : ["-device", "virtio-vga"])
 
   iso_checksum = var.checksum
   iso_target_extension = local.iso_target_extension
