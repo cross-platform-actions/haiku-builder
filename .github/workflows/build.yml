@@ -15,7 +15,9 @@ jobs:
   build:
     name: ${{ matrix.version }}, ${{ matrix.architecture.name }}
     runs-on: ubuntu-latest
-    container: alpine:edge
+    container:
+      image: alpine:edge
+      options: --privileged --device=/dev/kvm
     strategy:
         matrix:
           version:
@@ -33,6 +35,9 @@ jobs:
 
       - name: Install Dependencies
         run: apk add --no-cache qemu-img "qemu-system-${{ matrix.architecture.qemu }}"
+
+      - name: Print QEMU version
+        run: "qemu-system-${{ matrix.architecture.qemu }}" --version
 
       - uses: hashicorp/setup-packer@main
         with:
