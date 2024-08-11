@@ -101,24 +101,26 @@ source "qemu" "qemu" {
   ssh_timeout = "10000s"
 
   qemuargs = concat(
-    ["-boot", "strict=off"],
-    ["-monitor", "none"],
+    [
+      ["-boot", "strict=off"],
+      ["-monitor", "none"],
 
-    /*["-accel", "kvm"],
-    ["-accel", "hvf"],*/
-    ["-accel", "tcg"],
+      /*["-accel", "kvm"],
+      ["-accel", "hvf"],*/
+      ["-accel", "tcg"],
 
-    ["-usb"],
-    ["-device", "usb-tablet,bus=usb-bus.0"],
-    ["-device", "usb-mouse,bus=usb-bus.0"],
-    ["-device", "usb-kbd,bus=usb-bus.0"],
-    ["-device", "nec-usb-xhci,id=usb-controller-0"],
+      ["-usb"],
+      ["-device", "usb-tablet,bus=usb-bus.0"],
+      ["-device", "usb-mouse,bus=usb-bus.0"],
+      ["-device", "usb-kbd,bus=usb-bus.0"],
+      ["-device", "nec-usb-xhci,id=usb-controller-0"],
 
-    ["-device", "virtio-blk,drive=drive0,bootindex=0"],
-    ["-device", "ide-cd,drive=drive1,bootindex=1"],
-    ["-drive", "if=none,file={{ .OutputDir }}/{{ .Name }},id=drive0,cache=writeback,discard=ignore,format=qcow2"],
-    ["-drive", "if=none,file=${local.iso_full_target_path},id=drive1,media=disk,format=raw,readonly=on"],
-    var.headless ? [""] : ["-device", "virtio-vga"]
+      ["-device", "virtio-blk,drive=drive0,bootindex=0"],
+      ["-device", "ide-cd,drive=drive1,bootindex=1"],
+      ["-drive", "if=none,file={{ .OutputDir }}/{{ .Name }},id=drive0,cache=writeback,discard=ignore,format=qcow2"],
+      ["-drive", "if=none,file=${local.iso_full_target_path},id=drive1,media=disk,format=raw,readonly=on"],
+    ],
+    var.headless ? [] : [["-device", "virtio-vga"]]
   )
 
   iso_checksum = var.checksum
