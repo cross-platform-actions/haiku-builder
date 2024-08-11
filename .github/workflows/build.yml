@@ -37,7 +37,7 @@ jobs:
         run: apk add --no-cache qemu-img "qemu-system-${{ matrix.architecture.qemu }}"
 
       - name: Print QEMU version
-        run: "qemu-system-${{ matrix.architecture.qemu }}" --version
+        run: '"qemu-system-${{ matrix.architecture.qemu }}" --version'
 
       - uses: hashicorp/setup-packer@main
         with:
