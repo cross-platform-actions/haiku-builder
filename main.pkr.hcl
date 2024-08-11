@@ -106,8 +106,8 @@ source "qemu" "qemu" {
       ["-boot", "strict=off"],
       ["-monitor", "none"],
 
-      ["-accel", "kvm"],
-      ["-accel", "hvf"],
+      /*["-accel", "kvm"],
+      ["-accel", "hvf"],*/
       ["-accel", "tcg"],
 
       ["-usb"],
