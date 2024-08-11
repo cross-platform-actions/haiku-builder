@@ -3,7 +3,7 @@
 set -exu
 
 install_extra_packages() {
-  pkgman refresh
+  # pkgman refresh
   pkgman install rsync -y
 }
 
