@@ -195,7 +195,7 @@ source "qemu" "qemu" {
     ["<enter><wait>", "Press '/dev/disk/virtual/virtio_block/0/raw'"],
     ["<enter><wait1m>", "Begin"],
     ["<enter>", "Restart"],
-    ["<wait1m>", "Wait for restart"],
+    ["<wait2m>", "Wait for restart"],
 
     // Haiku. System is now installed and has rebooted. Need to set password.
     ["haiku<enter>", "Haiku"],
