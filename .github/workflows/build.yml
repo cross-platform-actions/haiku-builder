@@ -15,9 +15,9 @@ jobs:
   build:
     name: ${{ matrix.version }}, ${{ matrix.architecture.name }}
     runs-on: ubuntu-latest
-    container:
-      image: alpine:edge
-      options: --privileged --device=/dev/kvm
+    # container:
+    #   image: alpine:edge
+    #   options: --privileged --device=/dev/kvm
     strategy:
         matrix:
           version:
@@ -25,7 +25,7 @@ jobs:
 
           architecture:
             - name: x86-64
-              qemu: x86_64
+              qemu: x86
 
     steps:
       - name: Clone Repository
@@ -34,7 +34,10 @@ jobs:
           persist-credentials: false
 
       - name: Install Dependencies
-        run: apk add --no-cache qemu-img "qemu-system-${{ matrix.architecture.qemu }}"
+        run: sudo apt update && sudo apt install -y curl unzip "qemu-system-${{ matrix.architecture.qemu }}"
+
+      # - name: Install Dependencies
+      #   run: apk add --no-cache qemu-img "qemu-system-${{ matrix.architecture.qemu }}"
 
       - name: Print QEMU version
         run: '"qemu-system-${{ matrix.architecture.qemu }}" --version'
@@ -48,7 +51,7 @@ jobs:
 
       - name: Build Image
         run: |
-          PACKER_LOG=1 ./build.sh \
+          PACKER_LOG=1 sudo ./build.sh \
             '${{ matrix.version }}' \
             '${{ matrix.architecture.name }}' \
             -var 'headless=true'
