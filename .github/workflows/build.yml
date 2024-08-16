@@ -25,7 +25,8 @@ jobs:
 
           architecture:
             - name: x86-64
-              qemu: x86
+              package: x86
+              qemu: x86_64
 
     steps:
       - name: Clone Repository
@@ -34,7 +35,7 @@ jobs:
           persist-credentials: false
 
       - name: Install Dependencies
-        run: sudo apt update && sudo apt install -y curl unzip "qemu-system-${{ matrix.architecture.qemu }}"
+        run: sudo apt update && sudo apt install -y curl unzip "qemu-system-${{ matrix.architecture.package }}"
 
       # - name: Install Dependencies
       #   run: apk add --no-cache qemu-img "qemu-system-${{ matrix.architecture.qemu }}"
