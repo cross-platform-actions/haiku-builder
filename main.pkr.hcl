@@ -100,7 +100,6 @@ source "qemu" "qemu" {
   accelerator = "none"
   qemu_binary = "qemu-system-${var.architecture.qemu}"
   cpu_model = var.cpu_type
-  /*firmware = "resources/qemu_efi.fd"*/
 
   ssh_username = "user"
   ssh_password = var.root_password
