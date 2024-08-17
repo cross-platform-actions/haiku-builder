@@ -51,7 +51,8 @@ jobs:
           PACKER_LOG=1 ./build.sh \
             '${{ matrix.version }}' \
             '${{ matrix.architecture.name }}' \
-            -var 'headless=true'
+            -var 'headless=true' \
+            -var 'acceleration=false'
 
       - name: Extract Version
         id: version

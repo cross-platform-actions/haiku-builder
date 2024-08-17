@@ -69,6 +69,11 @@ variable "display" {
   description = "What QEMU -display option to use"
 }
 
+variable "acceleration" {
+  default = true
+  description = "Indicates if hardware acceleration should be enabled or not"
+}
+
 locals {
   iso_target_extension = "iso"
   iso_target_path = "packer_cache"
@@ -105,11 +110,11 @@ source "qemu" "qemu" {
     [
       ["-boot", "strict=off"],
       ["-monitor", "none"],
+    ],
 
-      /*["-accel", "kvm"],
-      ["-accel", "hvf"],*/
-      ["-accel", "tcg"],
+    var.acceleration ? [["-accel", "kvm"], ["-accel", "hvf"], ["-accel", "tcg"]] : [],
 
+    [
       ["-usb"],
       ["-device", "usb-tablet,bus=usb-bus.0"],
       ["-device", "usb-mouse,bus=usb-bus.0"],
@@ -121,6 +126,7 @@ source "qemu" "qemu" {
       ["-drive", "if=none,file={{ .OutputDir }}/{{ .Name }},id=drive0,cache=writeback,discard=ignore,format=qcow2"],
       ["-drive", "if=none,file=${local.iso_full_target_path},id=drive1,media=disk,format=raw,readonly=on"],
     ],
+
     var.headless ? [] : [["-device", "virtio-vga"]]
   )
 
