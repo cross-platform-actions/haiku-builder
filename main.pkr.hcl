@@ -65,7 +65,7 @@ variable "use_default_display" {
 }
 
 variable "display" {
-  default = "cocoa"
+  default = "cocoa,zoom-to-fit=off"
   description = "What QEMU -display option to use"
 }
 
@@ -80,14 +80,14 @@ locals {
   iso_full_target_path = "${local.iso_target_path}/${sha1(var.checksum)}.${local.iso_target_extension}"
 
   vm_name = "haiku-${var.os_version}-${var.architecture.name}.qcow2"
-  iso_path = "r1beta4/haiku-${var.os_version}-${var.architecture.image}-anyboot.iso"
+  iso_path = "${var.os_version}/haiku-${var.os_version}-${var.architecture.image}-anyboot.iso"
 }
 
 source "qemu" "qemu" {
   machine_type = var.machine_type
   cpus = var.cpus
   memory = var.memory
-  net_device = "virtio-net"
+  net_device = "virtio-net-pci-non-transitional"
 
   disk_compression = true
   disk_interface = "virtio"
@@ -114,10 +114,8 @@ source "qemu" "qemu" {
     var.acceleration ? [["-accel", "kvm"], ["-accel", "hvf"], ["-accel", "tcg"]] : [],
 
     [
-      ["-usb"],
-      ["-device", "usb-tablet,bus=usb-bus.0"],
-      ["-device", "usb-mouse,bus=usb-bus.0"],
-      ["-device", "usb-kbd,bus=usb-bus.0"],
+      ["-device", "qemu-xhci"],
+      ["-device", "usb-tablet"],
       ["-device", "nec-usb-xhci,id=usb-controller-0"],
 
       ["-device", "virtio-blk,drive=drive0,bootindex=0"],
@@ -125,19 +123,17 @@ source "qemu" "qemu" {
       ["-drive", "if=none,file={{ .OutputDir }}/{{ .Name }},id=drive0,cache=writeback,discard=ignore,format=qcow2"],
       ["-drive", "if=none,file=${local.iso_full_target_path},id=drive1,media=disk,format=raw,readonly=on"],
     ],
-
-    var.headless ? [] : [["-device", "virtio-vga"]]
   )
 
   iso_checksum = var.checksum
   iso_target_extension = local.iso_target_extension
   iso_target_path = local.iso_target_path
   iso_urls = [
-    "http://mirror.rit.edu/haiku/r1beta4/haiku-r1beta4-${var.architecture.image}-anyboot.iso",
-    "https://ftp.osuosl.org/pub/haiku/r1beta4/haiku-r1beta4-${var.architecture.image}-anyboot.iso",
-    "https://s3.us-east-1.wasabisys.com/haiku-release/r1beta4/haiku-r1beta4-${var.architecture.image}-anyboot.iso",
-    "https://cloudflare-ipfs.com/ipns/hpkg.haiku-os.org/release/r1beta4/haiku-r1beta4-${var.architecture.image}-anyboot.iso",
-    "https://mirror.aarnet.edu.au/pub/haiku/r1beta4/haiku-r1beta4-${var.architecture.image}-anyboot.iso",
+    "http://mirror.rit.edu/haiku/${local.iso_path}",
+    "https://ftp.osuosl.org/pub/haiku/${local.iso_path}",
+    "https://s3.us-east-1.wasabisys.com/haiku-release/${local.iso_path}",
+    "https://cloudflare-ipfs.com/ipns/hpkg.haiku-os.org/release/${local.iso_path}",
+    "https://mirror.aarnet.edu.au/pub/haiku/${local.iso_path}",
   ]
 
   http_directory = "."
@@ -166,7 +162,7 @@ source "qemu" "qemu" {
     // DriveSetup
     ["<down><wait>", "DVD 1 - Haiku"],
     ["<down><wait>", "DVD 1 - haiku eps"],
-    ["<down><wait>", "DVD 2"],
+    /*["<down><wait>", "DVD 2"],*/
     ["<down><wait>", "/dev/disk/virtual/virtio_block/0/raw"],
     ["<leftAltOn><esc><leftAltOff><wait>", "open main menu"],
     ["<right><wait>", "Partition"],
@@ -183,8 +179,8 @@ source "qemu" "qemu" {
     ["<enter><wait>", "Format"],
 
     // Are you sure you want to write the changes back to disk now?
-    ["<tab><wait>", "Select Write changes"],
-    ["<spacebar><wait>", "Press Write changes"],
+    ["<tab><wait>", "Select 'Write changes'"],
+    ["<spacebar><wait>", "Press 'Write changes'"],
 
     // The partion "Haiku" has been successfully formatted.
     ["<enter><wait>", "OK"],
@@ -196,7 +192,7 @@ source "qemu" "qemu" {
     ["<leftShiftOn><tab><leftShiftOff><wait>", "Show optional packages"],
     ["<leftShiftOn><tab><leftShiftOff><wait>", "Select 'Onto'"],
     ["<down><wait>", "Open 'Onto'"],
-    ["<up><down><wait>", "Select '/dev/disk/virtual/virtio_block/0/raw'"],
+    ["<up><wait>", "Select '/dev/disk/virtual/virtio_block/0/raw'"],
     ["<enter><wait>", "Press '/dev/disk/virtual/virtio_block/0/raw'"],
     ["<enter><wait1m>", "Begin"],
     ["<enter>", "Restart"],
