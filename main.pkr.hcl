@@ -87,7 +87,8 @@ source "qemu" "qemu" {
   machine_type = var.machine_type
   cpus = var.cpus
   memory = var.memory
-  net_device = "virtio-net-pci-non-transitional"
+  // net_device = "virtio-net-pci-non-transitional"
+  net_device = "e1000"
 
   disk_compression = true
   disk_interface = "virtio"
@@ -210,6 +211,10 @@ source "qemu" "qemu" {
       "echo 'PermitRootLogin yes' >> /system/settings/ssh/sshd_config<enter><wait>",
       "Enable SSH login for root user"
     ],
+    [
+      "echo 'LogLevel DEBUG3' >> /system/settings/ssh/sshd_config<enter><wait>",
+      "Increase log level"
+    ],
     ["exit<enter><wait>", "Exit Terminal"],
 
     // Restart SSH daemon
@@ -233,7 +238,7 @@ source "qemu" "qemu" {
 packer {
   required_plugins {
     qemu = {
-      version = "~> 1.0.9"
+      version = "~> 1.1.1"
       source = "github.com/hashicorp/qemu"
     }
   }
@@ -246,11 +251,11 @@ build {
     script = "resources/provision.sh"
   }
 
-  provisioner "shell" {
-    script = "resources/custom.sh"
-  }
-
-  provisioner "shell" {
-    script = "resources/cleanup.sh"
-  }
+  // provisioner "shell" {
+  //   script = "resources/custom.sh"
+  // }
+  //
+  // provisioner "shell" {
+  //   script = "resources/cleanup.sh"
+  // }
 }

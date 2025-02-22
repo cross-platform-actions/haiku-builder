@@ -7,4 +7,6 @@ install_extra_packages() {
   pkgman install bash curl rsync -y
 }
 
-install_extra_packages
+# install_extra_packages
+
+echo "foo" > /tmp/bar.txt
