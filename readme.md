@@ -18,6 +18,7 @@ The following architectures and versions are supported:
 
 | Version | x86-64 |
 |---------|--------|
+| r1beta6 | ✓      |
 | r1beta5 | ✓      |
 
 ## Building Locally
