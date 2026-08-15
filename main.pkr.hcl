@@ -74,6 +74,12 @@ variable "acceleration" {
   description = "Indicates if hardware acceleration should be enabled or not"
 }
 
+variable "iso_urls" {
+  default = []
+  type = list(string)
+  description = "Where to download the installation ISO from. When empty, the release mirrors are used. Set this for versions that haven't been released yet, since those are not available on the mirrors"
+}
+
 locals {
   iso_target_extension = "iso"
   iso_target_path = "packer_cache"
@@ -81,6 +87,16 @@ locals {
 
   vm_name = "haiku-${var.os_version}-${var.architecture.name}.qcow2"
   iso_path = "${var.os_version}/haiku-${var.os_version}-${var.architecture.image}-anyboot.iso"
+
+  release_iso_urls = [
+    "http://mirror.rit.edu/haiku/${local.iso_path}",
+    "https://ftp.osuosl.org/pub/haiku/${local.iso_path}",
+    "https://s3.us-east-1.wasabisys.com/haiku-release/${local.iso_path}",
+    "https://cloudflare-ipfs.com/ipns/hpkg.haiku-os.org/release/${local.iso_path}",
+    "https://mirror.aarnet.edu.au/pub/haiku/${local.iso_path}",
+  ]
+
+  iso_urls = length(var.iso_urls) > 0 ? var.iso_urls : local.release_iso_urls
 }
 
 source "qemu" "qemu" {
@@ -128,13 +144,7 @@ source "qemu" "qemu" {
   iso_checksum = var.checksum
   iso_target_extension = local.iso_target_extension
   iso_target_path = local.iso_target_path
-  iso_urls = [
-    "http://mirror.rit.edu/haiku/${local.iso_path}",
-    "https://ftp.osuosl.org/pub/haiku/${local.iso_path}",
-    "https://s3.us-east-1.wasabisys.com/haiku-release/${local.iso_path}",
-    "https://cloudflare-ipfs.com/ipns/hpkg.haiku-os.org/release/${local.iso_path}",
-    "https://mirror.aarnet.edu.au/pub/haiku/${local.iso_path}",
-  ]
+  iso_urls = local.iso_urls
 
   http_directory = "."
   output_directory = "output"

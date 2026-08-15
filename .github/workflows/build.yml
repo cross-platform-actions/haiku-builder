@@ -18,10 +18,8 @@ jobs:
     strategy:
         matrix:
           version:
-            # TODO: set `uname_version` to the hrev of the R1/beta6 release,
-            # once the release is out.
             - name: 'r1beta6'
-              uname_version: hrev00000
+              uname_version: hrev59866_53
 
             - name: 'r1beta5'
               uname_version: hrev57937

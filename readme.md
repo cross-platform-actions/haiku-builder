@@ -21,6 +21,9 @@ The following architectures and versions are supported:
 | r1beta6 | ✓      |
 | r1beta5 | ✓      |
 
+Note, R1/beta6 has not been officially released yet. The image is built from
+the official test build, `hrev59866_53`, until the release is out.
+
 ## Building Locally
 
 ### Prerequisite

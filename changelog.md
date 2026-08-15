@@ -6,7 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Add support for Haiku R1/beta6
+- Add support for Haiku R1/beta6. Since it has not been officially released
+    yet, the image is built from the official test build, `hrev59866_53`
+- Add an `iso_urls` variable, which overrides where the installation ISO is
+    downloaded from. This makes it possible to build versions that are not
+    available on the release mirrors yet
 
 ## [0.1.0] - 2026-04-29
 ### Changed
