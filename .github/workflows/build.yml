@@ -22,8 +22,13 @@ jobs:
             - name: 'r1beta6'
               uname_version: hrev59866_53
 
+            # The Haiku project removed the R1/beta5 package repositories when
+            # releasing R1/beta6, which makes `pkgman` fail during
+            # provisioning. The image can no longer be built, so reuse the one
+            # from the last release that could build it.
             - name: 'r1beta5'
               uname_version: hrev57937
+              copy_from_previous_release: v0.1.0
 
           architecture:
             - name: x86-64
@@ -68,11 +73,21 @@ jobs:
       #     limit-access-to-actor: true
 
       - name: Build Image
+        if: '!matrix.version.copy_from_previous_release'
         run: |
           PACKER_LOG=1 ./build.sh \
             '${{ matrix.version.name }}' \
             '${{ matrix.architecture.name }}' \
             -var 'headless=true'
+
+      - name: Copy from previous release
+        if: matrix.version.copy_from_previous_release
+        run: |
+          curl -O -L \
+            --retry 3 \
+            --create-dirs \
+            --output-dir output \
+            https://github.com/cross-platform-actions/haiku-builder/releases/download/${{ matrix.version.copy_from_previous_release }}/haiku-${{ matrix.version.name }}-${{ matrix.architecture.name }}.qcow2
 
       - name: Start Local HTTP Server
         run: python3 -m http.server 8080 --directory output &

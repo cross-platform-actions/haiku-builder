@@ -24,6 +24,12 @@ The following architectures and versions are supported:
 Note, R1/beta6 has not been officially released yet. The image is built from
 the official test build, `hrev59866_53`, until the release is out.
 
+Note, the R1/beta5 image is no longer built. The Haiku project removed the
+R1/beta5 package repositories when releasing R1/beta6, which makes `pkgman`
+fail during provisioning. The image from the `v0.1.0` release, the last one
+that could be built, is reused for every release instead. It's still tested on
+every build, just not rebuilt.
+
 ## Building Locally
 
 ### Prerequisite

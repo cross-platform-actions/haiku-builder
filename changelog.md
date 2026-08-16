@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     downloaded from. This makes it possible to build versions that are not
     available on the release mirrors yet
 
+### Changed
+- The R1/beta5 image is copied from the `v0.1.0` release instead of being
+    rebuilt. The Haiku project removed the R1/beta5 package repositories when
+    releasing R1/beta6, which makes `pkgman` fail during provisioning. The
+    image is still tested on every build
+
 ## [0.1.0] - 2026-04-29
 ### Changed
 - Enable immutable releases ([action#140](https://github.com/cross-platform-actions/action/issues/140))
