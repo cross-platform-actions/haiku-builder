@@ -2,9 +2,25 @@
 
 set -exu
 
+# Downloading from the Haiku package servers intermittently fails with an I/O
+# error part way through a transfer, which fails the whole build.
+retry() {
+  attempt=1
+
+  while true; do
+    "$@" && return 0
+    [ "$attempt" -ge 5 ] && return 1
+
+    delay=$((attempt * 10))
+    echo "'$*' failed, retrying in ${delay}s" >&2
+    sleep "$delay"
+    attempt=$((attempt + 1))
+  done
+}
+
 install_extra_packages() {
-  pkgman refresh
-  pkgman install bash curl rsync -y
+  retry pkgman refresh
+  retry pkgman install bash curl rsync -y
 }
 
 add_sudo_shim() {
