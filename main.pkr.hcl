@@ -119,7 +119,10 @@ source "qemu" "qemu" {
 
   ssh_username = "user"
   ssh_password = var.root_password
-  ssh_timeout = "10000s"
+  # The installation takes around six minutes to reach SSH. When the boot
+  # steps don't match what the installer actually shows, SSH never becomes
+  # available, so keep the timeout just long enough to absorb a slow runner.
+  ssh_timeout = "15m"
 
   qemuargs = concat(
     [
